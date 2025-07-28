@@ -1,0 +1,6 @@
+python3.8
+ultralytics
+pytroch
+pandas
+numpy
+opencv
