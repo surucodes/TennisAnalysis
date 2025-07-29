@@ -68,7 +68,7 @@
             loss.backward()           # Step 4: Compute gradients
             optimizer.step()          # Step 5: Update weights
         
-        *4.5. We now write a utils file to read the video frames and to also save the video outputs. We use lossy methods for compression of images and saving them here: 
+        * 4.5. We now write a utils file to read the video frames and to also save the video outputs. We use lossy methods for compression of images and saving them here: 
         What is a Codec?
         A codec (short for coder-decoder) is used to compress (encode) and decompress (decode) digital data, usually audio or video.
 
@@ -147,7 +147,32 @@
         * 4.6. We now tese the save funciton by giving the same input video. We can see that the avi format made the original video which was 7 seconds to be now 9 seconds. Hence the avi format is bulky and occupies more size than the jpeg format. 
 
 
-    * 5.
+    * 5. The next step is to detect the players. We define some functions for the same task. We define a class called the PLayerTracker and we have some functions inside this which will help us to get the frames from the video and also the annotations associated with the images. Looking form the top, we have 3 funcitons detect frame , detect frames and draw bounding boxes funcitons. 
+        * 5.1. The detect frame function takes in a single frame , applies the default botsort through model.track (with persist=True , to specify that video frames are being inputted) and then stores the result in a 'result' variable. The result.names gives retrieves class ids and class names with a {id :"class"} dictionary like {0 : "person" , etc} . We then access the iterable results.boxes which has all the information related to the detected bounding boxes and we only keep the bounding boxes of the people class. box.id gives us a tensor which is the tracking id of the partiocular person , box.xyxy gives me the bounding box coordinates , box.cls returns a tensor of the class id ,(same as and associated with the results.names). And then we filter out only the person object class and store a dictionary which has player track id as keys and the bounding box coordinates as the values. 
+
+        The detect_frame function:
+        1. Takes a single video frame as input.
+        2. Uses a pre-trained object detection and tracking model (likely YOLO or similar) to detect and track objects in the frame.
+        3. Filters the results to keep only objects classified as "person."
+            For each detected person:
+            Extracts their tracking ID (a unique identifier that persists across frames).
+            Extracts their bounding box coordinates ([x_min, y_min, x_max, y_max]).
+            Stores this information in a dictionary (player_dict) where the keys are tracking IDs and the values are bounding box coordinates.
+        Returns the dictionary, which can be used to track people across frames in a video (e.g., for analyzing player movements in a sports video).
+
+        * 5.2. The detect frames funciton makes use of the detect frame funciton to input and iterate through all the frames in a video and then store all the frames in a separate list of dictionaries where ever element specifies the parameters of a specific frame with the track ids and the bounding box coordinates of only the players. 
+
+        * 5.3. The draw_bboxes funciton is a funciton to annotate the bounding boxes on each frame. Inside this funciton , we simultaneously access the video frames one by one and also the player detections list of dictionary. Note that length of video frames (which is structured something like video frames = {frame1 , frame 2 ,..} where each frame is a numpy array) is same as the length of player_detections as we have extracted tracking IDs and  coordinates of the bounding boxes for the very same frames. 
+        We then iterate through a single frame and a single element from the player detection and then for every frame , access the items in the individial frame's coordinates dictionary and then annotate using cv2.rectangle and also put up a tracking ID text just above each bounding box. We return the video frames with annotated values appended in a single output_video_frames list. 
+
+        * 5.4. We read the video in the video_frames variable using the read_video function and then annotate using draw_bbox function.
+      
+
+
+
+
+
+
 
     * 6.
 

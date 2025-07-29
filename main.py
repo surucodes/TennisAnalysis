@@ -12,6 +12,7 @@ def main():
     
     # ADDING THE DETECTION ANNOTATIONS ON THE FRAMES : 
     
+    output_video_frames = player_tracker.draw_bboxes(video_frames , player_detections)
     
     
     

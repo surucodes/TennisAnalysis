@@ -4,7 +4,7 @@ def read_video(video_path):
     
     cap = cv2.VideoCapture(video_path)
     frames = []
-    while cap.isOpened():
+    while True:
         ret, frame = cap.read()
         if not ret:
             break 
