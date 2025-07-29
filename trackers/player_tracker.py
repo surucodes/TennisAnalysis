@@ -1,0 +1,54 @@
+from ultralytics import YOLO 
+
+class PlayerTracker:
+    def __init__(self , model_path):
+        self.model = YOLO(model_path)
+        
+    def detect_frames(self , frames):
+        player_detections = []
+        for frame in frames:       
+            player_dict = self.detect_frame(frame)
+            player_detections.append(player_dict)
+        
+            return player_detections
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    def detect_frame(self , frame):
+        results = self.model.track(frame , persist = True)[0]
+        # persist tells the model that frame is part of a video sequence and not a standalone image.
+
+      
+        
+        id_name_dict = results.names
+        # results.names Retrieves class ids and class names. Has a dictionary like {0: "person" , 2: "dog", etc}
+        player_dict = {}
+        
+        for box in results.boxes :
+        # result.boxes has imformation about detected objects in the frame something like :    Bounding box coordinates.
+                # Class ID (what type of object it is).
+                # Tracking ID (to track the same object across frames).
+                #  .id , .xyxy , .cls are the tensor attributes from the box object.
+            track_id = int(box.id.tolist()[0])
+            result = box.xyxy.tolist()[0]
+            object_cls_id = box.cls.tolist()[0]
+            object_cls_name = id_name_dict[object_cls_id]
+            if object_cls_name == "person":
+                player_dict[track_id] = result
+                
+        return player_dict
+    
+    def draw_bboxes(self , video_frames , player_detections):
+        output_video_frames = []
+        # zip allows us to iterate two lists at a time!
+        for frame , player_dict in zip(video_frames , player_detections):
+            #Draw Bounding Boxes 
+            for track_id , bbox in player_dict.items():
+                x1,y1,x2,y2 = bbox
+            
